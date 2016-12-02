@@ -1,11 +1,11 @@
-### Descripción
+## Descripción
 Ejemplo de autenticación y control de acceso en capa web y en EJBs usando WildFly.
 
 Se hace uso de los mecanismos de autenticación ofrecidos por el servidor de aplicaciones (la otra alternativa es el control "manual" o empleando librerías como Spring Security).
 
 En este caso se utiliza la autentiación basada en base de datos (MySQL en este caso) y en el mecanismo de control de acceso de EJB (`@RolesAllowed`)
 
-### Configuración previa
+## Configuración previa
 1. Crear la BD, un usuario `ejemplo` y cargar los datos iniciales
 
 Desde el cliente `mysql`con el comando `mysql -u root -p`
@@ -33,7 +33,7 @@ INSERT INTO usuario(login,nombre, password)
 
 
 
-### Configuración de WildFly 8.2.21
+## Configuración de WildFly 8.2.21
 Configuración exclusiva de WildFly para definir la autenticación basada en BD y vincularla a los proyecto _web_ y _ejb_.
 
   * Disponible en el fichero `standalone-ejemplo.xml` incluido en el directorio `configuracion_previa`
@@ -113,7 +113,7 @@ Configuración exclusiva de WildFly para definir la autenticación basada en BD 
 ```
 
 
-### Configuración del control de acceso en el subproyecto _web_
+## Configuración del control de acceso en el subproyecto _web_
 Esta configuración está recogida en las especificiaciones de Java EE y es común a otros servidores de aplicaciones.
 
 Añadir en el fichero `WEB_INF/web.xml` la definición del método de login basado en formulario (_Form-BAses Login_), los roles de seguridad definidos para los distintos tipos de usuarios y vincular las URLs de la aplicación a cada uno de estos roles.
@@ -156,7 +156,7 @@ Añadir en el fichero `WEB_INF/web.xml` la definición del método de login basa
    * Si el login tiene éxito se continúa la navegación al destino indicado y, si falla, se redirige la navegación a la página de error declarada en `<form-error-page>`.
 
 
-## Página de login (subproyecto _web_)
+### Página de login (subproyecto _web_)
 Disponible en `web/src/main/webapp/login.xhtml`
 ```xml
 <?xml version='1.0' encoding='UTF-8' ?>
@@ -187,8 +187,8 @@ Disponible en `web/src/main/webapp/login.xhtml`
    Declara un formulario JSF convencional, pero el `<h:commandButton>` no está vinculado con ningún método de accion de los _Managed Beans_. En su lugar, la acción de la petición POST  está etiquetada con  `j_security_check`
    y los campos de entrada de _Login_ y _Contraseña_ tienen obligatoriamente los nombres `"j_username"` y `"j_password"`.
 
-### Detalles de configuación en el proyecto _ejb_
-## Declaración de la unidad de persistencia (_PersistenceUnit_)
+## Detalles de configuación en el proyecto _ejb_
+### Declaración de la unidad de persistencia (_PersistenceUnit_)
 Disponible en `ejb/src/main/resources/META-INF/persistence.xml`, se vincula con el _Datasource_ declarado en el fichero de configuración `standalone-ejemplo.xml`
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -205,20 +205,20 @@ Disponible en `ejb/src/main/resources/META-INF/persistence.xml`, se vincula con 
 </persistence>
 ```
 
-## Declaración de la entidad `Usuario`
+### Declaración de la entidad `Usuario`
 Disponible en `ejb/src/main/java/ejemplo/entidades/Usuario.java`.
 
 * La entidad tiene una anotación `@Table(name="usuario")` para garantizar que la tabla MySQL utilizada coincide con la que se emplea en la consulta definida en el parámetro `principalsQuery` del _Security Domain_ `ejemplo-autenticacion-security-domain` del fichero de configuración `standalone-ejemplo.xml`.
 * Las propiedades `login`, `password` están anotadas con `@Column(name="..."")` para garantizar que los nombre de as columnas de la tabla `usuario` coincida con las indicadas en la consulta definida en el parámetro `principalsQuery` del _Security Domain_ `ejemplo-autenticacion-security-domain` del fichero de configuración `standalone-ejemplo.xml`.
 
-## EJB `UsuarioDAO`
+### EJB `UsuarioDAO`
 Disponible en `ejb/src/main/java/ejemplo/daos/UsuarioDAO.java`.
 
 * Incluye a nivel de clase la anotación `@DeclareRoles("registrado")`, indicando el tipo de roles que potencialmente accederán al EJB
 * Los métodos `buscarTodos()` y `buscarPorLogin()` están anotados con `@RolesAllowed("registrado")` (realmente es redudante). Se puede probar a reemplazar la anotación por `@PermitAll` para ver el cambio en el comportamiento de la apliciación web.
 * Se incluye como ejemplo un método `actualizarPassword()` para mostar cómo generar desde código contraseñas válidas (se apoya en la función auxiliar `toHex()` para generar la codificación como cadena Hexadecimal)
 
-### Puesta en marcha
+## Puesta en marcha
 
 1. Clonar y compilar el proyecto
 
